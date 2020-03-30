@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./css/style.css">
+    </head>
+    <body>
+        <div class="player">
+            <div class="controls">
+                <div class="play_pause">
+                    <div class="play_pause_icon play_pause-play" onclick="PlayPause()"></div>
+                </div>
+                <div class="navigation">
+                    <div class="navigation_prev">
+                        <div class="navigation_prev_icon" onclick="Plauer.previous()"></div>
+                    </div>
+                    <div class="navigation_next">
+                    <div class="navigation_next_icon" onclick="nextTrack()"></div>
+                    </div>
+                </div>
+                <div class="progress_bar">
+                <div class="progress_bar_title">---</div>
+                <div class="progress_bar_stripe">
+                    <div class="progress_bar_container" onclick="nextProgress()">
+                        <div class="progress_bar_container_percentage "></div>
+                    </div>
+                </div>
+                </div>
+                <div class="progress_Volum">
+                <div class="progress_Volum_title">Громкость</div>
+                <div class="progress_Volum_stripe">
+                    <div class="progress_Volum_container" onclick="Volum()">
+                        <div class="progress_Volum_container_percentage "></div>
+                    </div>
+                </div>
+                </div>
+                <input type="file" class="play_Loading" name="audio" multiple accept="audio/*">
+                <input type="submit" class="play_Loading_add" onclick="showFile()" value="Добавить">
+            </div>
+            <div class="playlist" id="playlist">  
+            </div>
+        </div>
+        <script src="js/script.js"></script>
+    </body>
+</html>
