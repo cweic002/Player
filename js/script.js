@@ -3,6 +3,7 @@ Plauer.playlist=[];
 Plauer.playlist.name=[];
 Plauer.playlist.file=[];
 Plauer.playlist.timer=[];
+Plauer.playlist.size=-1;
 Plauer.plauer=new Audio('');
 Plauer.current=-1;
 Plauer.status="pause";
@@ -10,15 +11,25 @@ Plauer.nextTrack=nextTrack;
 Plauer.previous=previousTrack;
 Plauer.animation=getByQuery('.playlist').children[0];
 Plauer.animationStatus=0;
-getByQuery('.progress_Volum_container_percentage').style.width =Plauer.plauer.volume*100 + '%';
+Plauer.Volum=Plauer.plauer.volume;
+getByQuery('.progress_Volum_container_percentage').style.width =Plauer.Volum*100 + '%';
+
 //alert("Проверка");
 
-let timer=setTimeout();
+let timer;
+
 
 function showFile(){
-    let input= document.querySelector('input[type=file]');  
+    let input= document.querySelector('input[type=file]');
     for(let i=0;i<input.files.length;i++){
         let file = input.files[i];
+        AddElements(file);
+    }
+}
+
+function AddElements(file){    
+    let a= new Audio(URL.createObjectURL(file));
+    a.addEventListener('loadedmetadata', function (){
         Plauer.playlist.name.push(file.name);
         Plauer.playlist.file.push(URL.createObjectURL(file));
         let picHolder = document.getElementById("playlist");
@@ -37,26 +48,22 @@ function showFile(){
         div.appendChild(div3);
         div.setAttribute("onclick",`Play(${Plauer.playlist.name.length-1})`);
         picHolder.appendChild(div);
-        addPlayList(Plauer.playlist.file.length-1);
-    }
+        getByQuery('.playlist').children[Plauer.playlist.name.length-1].children[1].textContent = prettifyTime(a.duration);
+        Plauer.playlist.timer.push(a.duration);  
+    });
 }
 
-function addPlayList(index){
-    let a= new Audio(Plauer.playlist.file[index]);
-        a.addEventListener('loadedmetadata', function (){
-        getByQuery('.playlist').children[index].children[1].textContent = prettifyTime(a.duration);
-        Plauer.playlist.timer.push(a.duration);
+function PlayStop(){
+        Plauer.plauer.addEventListener('ended', function (){
+        PlayPause();
+        clearInterval(timer);
       });
 }
 
-function htmlTimUp2() {
+function htmlTimUp2() {    
+    getByQuery('.progress_bar_container_percentage').style.width = (Plauer.plauer.currentTime/Plauer.playlist.timer[Plauer.current])*100 + '%';
     getByQuery('.playlist').children[Plauer.current].children[2].textContent = prettifyTime(Plauer.plauer.currentTime);
     getByQuery('.progress_bar_container_percentage').style.width = (Plauer.plauer.currentTime/Plauer.playlist.timer[Plauer.current])*100 + '%';
-    if(Plauer.plauer.currentTime<Plauer.playlist.timer[Plauer.current]){
-       timer=setTimeout(htmlTimUp2,500);
-       }else{
-        PlayPause();
-       }
 }
 
 function PlayPause(){
@@ -83,6 +90,7 @@ function Play(i){
     Plauer.plauer.pause();
     Plauer.current=i;
     Plauer.plauer= new Audio(Plauer.playlist.file[Plauer.current]);
+    PlayStop();
     if(Plauer.status=="pause"){
         PlayPause();
     }else{
@@ -98,7 +106,9 @@ function Play(i){
     Plauer.animation.classList.toggle('fileEntity-active');
     }
     getByQuery('.progress_bar_title').textContent = Plauer.playlist.name[i];
-    timer=setTimeout(htmlTimUp2,500);
+    Plauer.plauer.volume=Plauer.Volum;
+    getByQuery('.progress_Volum_container_percentage').style.width =Plauer.Volum*100 + '%';
+    timer=setInterval(htmlTimUp2,100);
 }
 
 function nextTrack(){
@@ -129,6 +139,7 @@ function Volum(){
     let newPercent =((event.clientX - coords)/progressBar.offsetWidth);
     getByQuery('.progress_Volum_container_percentage').style.width =newPercent*100 + '%';
     Plauer.plauer.volume=newPercent;
+    Plauer.Volum=newPercent;
 }
 
 
